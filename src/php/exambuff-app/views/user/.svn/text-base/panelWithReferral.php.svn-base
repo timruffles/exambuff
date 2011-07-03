@@ -1,1 +1,0 @@
-<p id="referral"><a href="<?=site_url('user/refer')?>">Refer a friend and get &pound;2.00 for each one that signs up and makes a purchase.</a></p>

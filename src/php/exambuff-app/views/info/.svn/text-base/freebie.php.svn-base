@@ -1,8 +1,0 @@
-<div id="splashbox">
-    <div id="splashHighlight">
-        <h2>Congratulations, claim your <?php $offer ?> now!</h2>
-        <div>Login with Facebook</div>
-        <div>Login with an email</div>
-        <div style="clear:both"></div>
-    </div>
-</div>

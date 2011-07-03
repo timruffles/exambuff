@@ -1,4 +1,0 @@
-<?php
-$config['api_key'] = '3cf598477753f8e22c5df4750d0d1da5';
-$config['secret'] = '2e1671dd095eba5831665f1aa5817631';
-$config['generate_session_secret'] = true;
