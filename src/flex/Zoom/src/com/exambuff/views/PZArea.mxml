@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="600"
+	 mouseDown="panStart(event)" mouseUp="panStop(event)" mouseWheel="zoom(event)" backgroundColor="blue" xmlns:views="com.exambuff.views.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.EffectEvent;
+			import mx.effects.effectClasses.ZoomInstance;
+			import com.exambuff.views.PZSquare;
+			import com.exambuff.events.PanZoomEvent;
+			import com.exambuff.helpers.PanZoom;
+			private var _panStart:Point;
+			private var _panStop:Point;
+			private var _lastScale:int;
+		
+			public function panStart(e:MouseEvent):void {
+				var global:Point = e.target.localToGlobal(new Point(e.localX,e.localY));
+				this._panStart = new Point(global.x,global.y);
+			}
+			public function panStop(e:MouseEvent):void {
+				var global:Point = e.target.localToGlobal(new Point(e.localX,e.localY));
+				this._panStop = new Point(global.x,global.y);
+				this._panHandler();
+			}
+			public function zoom(e:MouseEvent):void {
+				for each(var d:PZSquare in this.getChildren()) {
+					var z:ZoomInstance = new ZoomInstance(d);
+					z.duration = 1;
+					z.originX = d.width/2+d.x;
+					z.originY = d.width/2+d.y;
+					z.zoomHeightTo = d.width*(1+e.delta*5);
+					z.zoomHeightTo = d.height*(1+e.delta*5);
+					z.addEventListener(EffectEvent.EFFECT_END,_removeZ);
+					z.play();
+				}
+			}
+			private function _removeZ(e:EffectEvent):void {
+				e.target.removeEventListener(EffectEvent.EFFECT_END,_removeZ);
+			}
+			private function _panHandler():void {
+				var xMove:int = Math.abs(this._panStart.x- this._panStop.x);
+				this._panStart.x <  this._panStop.x ? xMove : xMove = -xMove;
+				var yMove:int = Math.abs(this._panStart.y- this._panStop.y);
+				this._panStart.y < this._panStop.y ? yMove : yMove = -yMove;
+				for each(var d:DisplayObject in this.getChildren()) {
+					d.x += xMove;
+					d.y += yMove;
+				}
+			}
+		]]>
+	</mx:Script>
+	<views:PZSquare>
+		
+	</views:PZSquare>
+</mx:Canvas>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	title="You need to login"
+	>
+	<mx:Form>
+		<mx:Text id="errors">
+			
+		</mx:Text>
+		<mx:FormItem label="Email:">
+			<mx:TextInput id="email" />
+		</mx:FormItem>
+		<mx:FormItem label="Password:">
+			<mx:TextInput id="password" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:Button label="Login" id="submit" click="this.loginAttempt()"/>
+	</mx:Form>
+	<mx:Script>
+		<![CDATA[
+			
+			// to broadcast to other mxml comps on success
+			public static const SUCCESS:String = 'login succ';
+			public static const FAIL:String = 'login fail';
+			
+			public var baseURL:String;
+		
+			import helper.Login;			
+			
+			private var loginModel:Login;
+			
+			private function loginAttempt():void {
+				if(this.baseURL == null) throw new Error('LoginWindow requires baseURL to be set before login attempts are made');
+				this.loginModel = new Login(this.baseURL);
+				this.loginModel.addEventListener(Login.FAIL,this.failed);
+				this.loginModel.addEventListener(Login.SUCCESS,this.succeeded);
+				this.loginModel.loginAttempt(this.email.text,this.password.text);
+			}
+			private function failed(e:Event):void {
+				this.errors.text = 'Your user name or password were incorrect, please retry';
+				this.dispatchEvent(new Event(LoginWindow.FAIL));
+			}
+			private function succeeded(e:Event):void {
+				this.errors.text = 'You\'ve logged in successfully';
+				this.dispatchEvent(new Event(LoginWindow.SUCCESS));
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

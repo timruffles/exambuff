@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>MarkSaveLoadTest</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.adobe.flexbuilder.project.flexbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.adobe.flexbuilder.project.flexnature</nature>
+		<nature>com.adobe.flexbuilder.project.actionscriptnature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>[source path] src</name>
+			<type>2</type>
+			<location>/home/tim/Documents/Projects/Flex Workspace/Marker/src</location>
+		</link>
+		<link>
+			<name>[source path] extra src</name>
+			<type>2</type>
+			<location>/home/tim/Documents/Projects/Flex Workspace/extra src</location>
+		</link>
+	</linkedResources>
+</projectDescription>

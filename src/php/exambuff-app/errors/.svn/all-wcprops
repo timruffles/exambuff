@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/errors
+END
+error_db.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/errors/error_db.php
+END
+error_404.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/errors/error_404.php
+END
+error_php.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/errors/error_php.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/errors/index.html
+END
+error_general.php
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/errors/error_general.php
+END

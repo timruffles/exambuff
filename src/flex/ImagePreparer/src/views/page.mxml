@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml" width="80" height="80">
+	<mx:Script>
+		<![CDATA[
+		import models.Page;
+		
+		// gets the progress property of the page, and returns it
+		private function _getLabel():String {
+			var progress:String = data.progress;
+			if(progress == Page.UPLOAD_COMPLETE) {
+				return 'Complete';
+			} else {
+				return progress;
+			}
+		}
+		]]>
+	</mx:Script>
+	<mx:Button label="{this._getLabel()}">
+		
+	</mx:Button>
+</mx:Canvas>

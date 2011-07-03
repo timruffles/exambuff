@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:FormItem xmlns:mx="http://www.adobe.com/2006/mxml" >
+	<mx:ArrayCollection id="targetTypes">
+				<mx:Object label="Style" value="{Target.STYLE}" />
+				<mx:Object label="Argument" value="{Target.ARGUMENT}" />
+				<mx:Object label="Evidence" value="{Target.EVIDENCE}" />
+				<mx:Object label="Planning" value="{Target.PLANNING}" />
+				<mx:Object label="Introduction and conclusion" value="{Target.INTRO_CON}" />
+	</mx:ArrayCollection>
+	<mx:HBox>
+		<mx:ComboBox dataProvider="{targetTypes}" id="targetType" />
+		<mx:TextArea id="targetText" width="300" height="50"/>
+	</mx:HBox>
+	<mx:Script>
+		<![CDATA[
+			import vo.Target;
+		
+			public function get target():Target {
+				trace('tar type === '+this.targetType.selectedItem.value);
+				return new Target(this.targetType.selectedItem.value,this.targetText.text);
+			}
+			public function init():void {
+				
+			}
+		]]>
+	</mx:Script>
+</mx:FormItem>

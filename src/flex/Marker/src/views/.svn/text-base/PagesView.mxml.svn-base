@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	 creationComplete="_init()" initialize="preInit()"
+	 >
+	<mx:Image id="image"/>
+	<mx:Rotate id="rotater" target="{this.image}" originX="{this.image.width/2}" originY="{this.image.height/2}" duration="500" />
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			
+			public static const PAGE_SET_UP:String = 'pv p s u'; 
+		
+			import models.Marks;
+		
+			import mx.core.Application;
+			import mx.events.EffectEvent;
+			import mx.effects.Move;
+			import models.ScriptPages;
+			import mx.events.FlexEvent;
+			import mx.controls.Image;
+			import mx.effects.Rotate;
+			
+			
+			[Bindable]
+			public var scriptPages:ScriptPages;
+			
+			[Bindable]
+			public var marks:Marks;
+			
+			[Bindable]
+			public var pageOffset:Point;
+			
+			public var pageLoaded:int;
+			
+			private var _currentPage:int;
+			
+			// ugly hack because first page needs a weird timeout ( see _loadPage());
+			private var firstPageLoaded:Boolean = true;
+			
+			
+			private var animating:Boolean;
+			
+			
+			private function _init():void {
+				this._loadPage();
+			}
+			public function dragStart():void {
+				this.image.startDrag();
+			}
+			public function dragStop():void {
+				this.image.stopDrag();	
+			}
+			private function preInit():void {
+				var bX:ChangeWatcher = BindingUtils.bindSetter(this.updateOffset,this.image,"x");
+				var bY:ChangeWatcher = BindingUtils.bindSetter(this.updateOffset,this.image,"y");
+			}
+			private function updateOffset(v:int):void {
+				this.pageOffset = new Point(this.image.x,this.image.y);
+				trace('pages view page offset now'+this.pageOffset.toString());
+			}
+			/**
+			 * Fit the bmd, if there's already an image, remove it. Make a new one, add the bitmap as a child, 
+			 * */
+			private function changePage():void {
+				trace('pages view cp fired, loading page '+this.currentPage );
+				this._loadPage();
+			}
+			private function _loadPage(event:FlexEvent = null, rotation:int = 0):void {
+				trace('pages view now loading page');
+				this.image.visible = false;
+		    	var fitted:BitmapData = this.fitToThis(this.scriptPages.getPageBMD(this.currentPage));
+		    	var forAdding:Bitmap = new Bitmap(fitted);
+		    	
+		    	var rotation:int =  this.marks.page(this.currentPage).rotation;
+		    	
+		    	this.image.source = forAdding;
+		    	
+		    	if(this.firstPageLoaded) {
+		    		this.firstPageLoaded = false;
+		    		setTimeout(initRotate,500,rotation);
+		    	} else {
+		    		this.initRotate(rotation);
+		    	}
+			}
+			private function fitToThis(BMD:BitmapData):BitmapData {
+				var bmd:BitmapData = BMD;
+                                
+		        var originalWidth:Number = bmd.width;
+		        var originalHeight:Number = bmd.height;
+		        var newWidth:Number = originalWidth;
+		        var newHeight:Number = originalHeight;
+		                        
+		        var m:Matrix = new Matrix();
+		        
+		         var scale:Number = 1;
+		 
+		        if (originalWidth > 800 || originalHeight > 800)
+		        {
+		                var sx:Number =  800 / originalWidth;
+		                var sy:Number = 800 / originalHeight;
+		                scale = Math.min(sx, sy);
+		                newWidth = originalWidth * scale;
+		                newHeight = originalHeight * scale;     
+		        }
+		        m.scale(scale,scale);
+		        var loaded:BitmapData = new BitmapData(newWidth,newHeight); 		                                
+		        loaded.draw(bmd, m);
+		        return loaded;
+			}
+			private function _alignToTop(e:EffectEvent = null):void {
+				if(this.animating) {return};
+				this.animating=true;
+				var mover:Move = new Move(this.image);
+				mover.addEventListener(EffectEvent.EFFECT_END,animComplete,false,0,true);
+				mover.xTo = this.image.x;
+				mover.yTo = 0;
+				mover.play();
+			}
+			public function rotateRight():void {
+				if(this.animating) {return};
+				this.rotater.addEventListener(EffectEvent.EFFECT_END,animComplete,false,0,true);
+				this.animating = true;
+				this.rotater.angleFrom = this.image.rotation;
+				this.rotater.angleTo = this.image.rotation + 90;
+				this.rotater.play();								
+			}
+			public function rotateLeft():void {
+				if(this.animating) {return};
+				this.rotater.addEventListener(EffectEvent.EFFECT_END,animComplete,false,0,true);
+				this.animating = true;
+				this.rotater.angleFrom = this.image.rotation;
+				this.rotater.angleTo = this.image.rotation - 90;
+				this.rotater.play();								
+			}
+			private function initRotate(rotation:int):void {
+				if(this.image.rotation !== rotation) {
+					this.rotater.angleFrom = this.image.rotation;
+					this.rotater.angleTo = rotation;
+					this.rotater.duration = 2;
+					this.rotater.addEventListener(EffectEvent.EFFECT_END,initComplete,false,0,true);
+					this.rotater.play();
+					return;
+				}			
+				this.initComplete();
+			}
+			private function initComplete(e:EffectEvent = null):void {
+				trace('pages view p set up '+this.currentPage);
+				this.rotater.duration = 500;
+				this.image.visible = true;
+				this.dispatchEvent(new Event(PagesView.PAGE_SET_UP));
+			}
+			private function animComplete(e:EffectEvent):void {
+				this.animating = false;
+				/*var g:Point = this.image.localToGlobal(new Point(0,0));
+				var p:Point = this.globalToLocal(g);
+				trace(g.toString());*/
+			}
+			[Bindable]
+			public function set currentPage(num:int):void {
+				trace('CHANGED');
+				this._currentPage = num;
+				this.changePage();
+			}
+			public function get currentPage():int {
+				return this._currentPage;
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

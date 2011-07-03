@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:views="views.*"
+	creationComplete="_init(event)">
+	<mx:Script>
+		<![CDATA[	
+			import models.ImagePreparerPM;			
+			import mx.controls.Image;
+			import models.Script;
+			import events.ScriptEvent;
+			
+			
+			[Bindable]
+			public var script:Script;
+			
+			[Bindable]
+			public var presentationModel:ImagePreparerPM;
+						
+			private var original:BitmapData;
+			
+			
+			private function _init(event:Event):void {
+						
+				script.addEventListener(ScriptEvent.PAGE_ADDED,presentationModel.pageAdded);			
+			}			
+			private function rotateState():void {
+				presentationModel.state = ImagePreparerPM.ROTATE;
+			}
+			private function cropState():void {
+				presentationModel.state = ImagePreparerPM.CROP;
+			}
+			private function save():void {
+				
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox>
+		<mx:HBox>	
+			<mx:Button label="Rotate" click="rotateState()">
+				
+			</mx:Button>
+			<mx:Button label="Crop"  click="cropState()">
+				
+			</mx:Button>
+		</mx:HBox>
+		<mx:Button label="Save" click="save()">
+			
+		</mx:Button>
+		<views:ImagePane  presentationModel="{presentationModel}">
+			
+		</views:ImagePane>	
+	</mx:VBox>
+</mx:Canvas>

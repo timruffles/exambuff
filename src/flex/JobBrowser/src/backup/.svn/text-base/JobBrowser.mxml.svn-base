@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	xmlns:views="views.*">
+	<mx:RemoteObject id="jobImporter" 
+					 fault="faultHandler(event)"
+					 showBusyCursor="true" 
+					 source="com.beforexam.joblist.getJobs" 
+					 destination="amfphp" >
+		<mx:method name="helloWorld" result="resultHandler(event)" />
+	</mx:RemoteObject>	
+	<mx:Panel>
+		<mx:VBox>		
+			<mx:TextArea id="resultDisplay" width="500" height="375">
+				
+			</mx:TextArea>
+			<mx:Button label="sayHello" width="79" click="jobImporter.helloWorld.send();"/>
+		 </mx:VBox>		
+	</mx:Panel>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.events.FaultEvent;
+			[Bindable]
+			private var dataCollection:ArrayCollection;
+			
+			private function faultHandler(fault:FaultEvent):void {
+				resultDisplay.text = "code:\n" + fault.fault.faultCode + "\n\nMessage:\n" + fault.fault.faultString + "\n\nDetail:\n" + fault.fault.faultDetail;
+			}
+			private function resultHandler(data:Object):void {
+				var printString:String;
+				for(var i:int;i<data.result.length;i++) {
+					for(var p:String in data.result[i]) {
+						resultDisplay.text += p.toString()+" "+typeof(p);
+						for(var q:String in p) {
+						 resultDisplay.text += q.toString();
+						}
+					}
+					
+				}
+				
+			}
+		]]>
+	</mx:Script>
+</mx:Application>

@@ -1,0 +1,2 @@
+<h2>Your Exambuff pilot account has been created</h2>
+<?=$this->load->view('chunks/messages',array('checkpoints'=>'Your pilot testing account has been created. You will not be able to login until your account is fully activated.</p><p>You should have received an email informing you of your testing-group and a timeframe for your account\'s activation. If you have any further questions, please use the contact details in that email.'))?>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+ layout="absolute">
+<mx:Script>
+      <![CDATA[
+      		private var lastPosition:Point;
+            private function doZoom():void {
+                  myCanvas.scaleX = myCanvas.scaleY = ( myZoomer.value / 100 );
+            }
+      ]]>
+</mx:Script>
+      <mx:VSlider x="414" y="151" minimum="10" maximum="400"
+snapInterval="5" liveDragging="true" id="myZoomer" change="doZoom();"
+value="200"/>
+      <mx:Canvas x="439" y="151" width="400" height="400" id="myHolder">
+            <mx:Canvas id="myCanvas" horizontalScrollPolicy="off"
+verticalScrollPolicy="off" backgroundColor="blue" width="400" height="400">
+				<mx:Canvas id="zoomer" width="150" height="200" horizontalCenter="0" verticalCenter="0" backgroundColor="red">
+					
+				</mx:Canvas>
+            </mx:Canvas>
+      </mx:Canvas>
+</mx:Application>

@@ -1,0 +1,3 @@
+<?php
+$lang['questionTitle'] = 'Question';
+?>

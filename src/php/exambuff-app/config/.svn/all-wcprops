@@ -1,0 +1,95 @@
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config
+END
+exambuff.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/exambuff.php
+END
+database.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/database.php
+END
+config.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/config.php
+END
+autoload.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/autoload.php
+END
+facebook.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/facebook.php
+END
+mimes.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/mimes.php
+END
+constants.php
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/constants.php
+END
+user_agents.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/user_agents.php
+END
+simpletester.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/simpletester.php
+END
+routes.php
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/routes.php
+END
+hooks.php
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/hooks.php
+END
+live_config.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/live_config.php
+END
+index.html
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/index.html
+END
+specific.php
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/specific.php
+END
+smileys.php
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/config/smileys.php
+END

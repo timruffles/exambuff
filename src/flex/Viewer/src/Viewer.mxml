@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+				xmlns:view="views.*" 
+				backgroundGradientColors="[0xe5e5e5,0xf8f8f8]"
+				backgroundColor="0xfefefe"
+				themeColor="0xf4d736" 				
+				applicationComplete="_init()"
+				>
+		<mx:ApplicationControlBar dock="true" paddingBottom="10" focusEnabled="false">
+			<mx:HBox width="100%" id="appBar">
+				<mx:Image id="myLogo" source="@Embed('/../img/logo-small-optimised.png')"/>
+				<mx:VBox>
+					<mx:Label width="80" text="Help topics:" bottom="{this.help.height}" />
+					<mx:PopUpMenuButton focusEnabled="false" id="help" dataProvider="{this.helpTopics}" bottom="0" itemClick="{this.showHelp(event)}">
+					</mx:PopUpMenuButton>
+					<mx:Label text="Quick tip: Press and hold space to enter panning mode, then click and drag the mouse to move the page around." />
+				</mx:VBox>
+			</mx:HBox>	
+		</mx:ApplicationControlBar>
+		<mx:ArrayCollection id="helpTopics">
+			<mx:Object label="Move the page" 
+					   title="How to move the page image" />
+			<mx:Object label="Reading comments" 
+					   title="How to read comments in the text"/>
+		</mx:ArrayCollection>
+		<mx:Array id="helpText">
+			<mx:Text condenseWhite="true">
+				<mx:htmlText>
+					<![CDATA[
+<p align="left">To move the image:</p><ul><li>Press and hold space to enter panning mode</li><li>While in panning mode you can move the page image around by clicking and dragging the page with your mouse.</li><li>Release the space and you'll re-enter marking mode, and will be able to draw marking boxes again.</li></ul> 
+					]]>
+				</mx:htmlText>
+			</mx:Text>
+			<mx:Text condenseWhite="true">
+				<mx:htmlText>
+					<![CDATA[
+<p align="left">To read a comment on the text:</p><ul><li>The yellow see-through boxes on the text are the currently viewed comment</li><li>The comments in the side-bar relate to the text highlighted by the yellow marking box</li><li>To change the comment you are reading, click on one of the blue marking boxes. This will load the comment text for that box on the right</li><li>Click on the title bars under 'Specific skills' to read the comments on specific skills. If a comment is present, a green tick icon will be present in the title bar</li> 
+					]]>
+				</mx:htmlText>
+			</mx:Text>
+		</mx:Array>
+		<mx:Script>
+			<![CDATA[
+				import events.MarksEvent;
+				import mx.events.FlexEvent;
+				import mx.controls.Alert;
+				import mx.events.MenuEvent;
+				import mx.events.CloseEvent;
+				import mx.containers.TitleWindow;
+				import mx.managers.PopUpManager;
+				import views.MarkingAreaView;
+				import views.SubmissionView;
+			
+				import models.ScriptPages;
+				import models.Marks;
+				
+				import helper.Downloader;
+				import helper.JobLoader;
+				
+				import mx.controls.Image;
+				import mx.automation.events.ListItemSelectEvent;	
+				import mx.binding.utils.BindingUtils;
+				import mx.events.ListEvent;
+				
+				import events.MarkingAreaEvent;
+				import events.JobLoaderEvent;		
+				import events.ScriptPagesEvent;
+				import events.SubmissionViewEvent;
+				/**
+				 * App wide vars
+				 * */ 
+				// model to hold, save and load marks for scripts
+				[Bindable]
+				public var marks:Marks;
+				
+				[Bindable]	
+				public var scriptPages:ScriptPages;
+				
+				private var marksLoaded:Boolean = false;
+				private var firstPageLoaded:Boolean = false;
+				
+				private var _appBarControls:DisplayObjectContainer;
+				
+				private var _jobLoader:JobLoader;
+				
+				private var _markingView:MarkingAreaView;
+				
+				private var _submissionView:SubmissionView;
+				
+				private var _baseURL:String;
+				
+				// store the total page count
+				private var _lastPage:int;
+				
+				/**
+				 * Get location data and apply it to objects that need it
+				 * */
+				private function _init():void {
+					
+					// are we in testing or production?
+					this._baseURL = 'http://www.exambuff.co.uk';
+					
+					// set up models
+					this.scriptPages = new ScriptPages(this._baseURL+'/user/scripts');
+					this.marks = new Marks(this._baseURL+'/user/scripts');
+					
+					// do we need the user to select a job?
+					if (Application.application.parameters.script) {
+						this._loadJob(Application.application.parameters.script);
+						
+						// load the number of pages from the param - vital for forward/back
+						// buttons to work properly
+						this._lastPage = Application.application.parameters.numPages;
+					} else {
+						this.jobView.visible = true;
+						this._jobLoader = new JobLoader(this._baseURL+'/user/scripts/marked');
+						this._userJobSelection();
+					}
+					
+					this.addEventListener(MarkingAreaEvent.FINISHED,_markAndSubmit);
+				}
+				private function _userJobSelection():void {	
+					trace('initialising');
+					this._jobLoader.addEventListener(JobLoaderEvent.JOBS_LOADED,this._jobListLoaded);
+					this._jobLoader.addEventListener(JobLoaderEvent.NOT_AUTH,this._notAuth);
+					this._jobLoader.addEventListener(JobLoaderEvent.NO_JOBS,this._noJobs);
+					this._jobLoader.loadJobs();
+				}
+				/**
+				 * Gets jobs and loads them into job loader list
+				 * */
+				private function _jobListLoaded(e:JobLoaderEvent):void {
+					trace('Job list loaded');
+					var jobLoader:JobLoader = JobLoader(e.target);
+					this.jobList.dataProvider = jobLoader.jobs;
+				}
+				/**
+				 * Informs the user if no jobs have been found
+				 * */
+				private function _noJobs(e:JobLoaderEvent):void {
+					this.jobList.dataProvider = null;
+					Alert.show('None of your answers have been reviewed by our tutors yet. Please check back later','No answers found');
+				}
+				/**
+				 * Informs the user if not logged in
+				 * 				 * */
+				private function _notAuth(e:JobLoaderEvent):void {
+					this.jobList.dataProvider = null;
+					Alert.show('Cannot connect to Exambuff - are you logged in?','Cannot connect');
+				}
+				/**
+				 * On select job, listen for load success. This is better done by main view, as if it fails we
+				 * want to let the user try again, without loading the MarkingAreaView
+				 * */
+				private function _selectJob(event:MouseEvent):void {
+					// has the user actually selected an item before clicking?
+					if(!this.jobList.selectedItem) return;
+					
+					this._loadJob(this.jobList.selectedItem.ID);
+					// don't let the user select another job while we load
+					this.selectJob.enabled = false;
+					
+					// actually quite vital to ensure forward/back buttons etc work
+					this._lastPage = this._jobLoader.jobs[this.jobList.selectedIndex].pages;
+				}
+				private function _loadJob(script:int):void {
+					
+					this.marksLoaded = false;
+					this.firstPageLoaded = false;
+					
+					// set up marks with script to load, and listeners
+					this.marks.script = script;
+					this.marks.addEventListener(MarksEvent.MARKS_LOADED,this.checkReadyForMarking);
+					this.marks.load();
+					
+					
+					
+					this.scriptPages.addEventListener(ScriptPagesEvent.PAGE_LOADED,checkReadyForMarking,false,0,true);
+					this.scriptPages.addEventListener(ScriptPagesEvent.PAGE_LOAD_FAILED,_loadFailed,false,0,true);
+					this.scriptPages.loadPage(script,0);
+					
+				}
+				private function checkReadyForMarking(e:Event):void {
+					if(e.type === MarksEvent.MARKS_LOADED) this.marksLoaded = true;
+					if(e.type === ScriptPagesEvent.PAGE_LOADED) this.firstPageLoaded = true;
+					trace(this.marksLoaded +'& '+ this.firstPageLoaded);
+					if(this.marksLoaded && this.firstPageLoaded) this.startMarkingArea();
+				}
+				/**
+				 * Allow user to retry
+				 * */
+				private function _loadFailed(spe:ScriptPagesEvent):void {
+					this.selectJob.enabled = true;
+				}
+				/**
+				 * Switch the view to marking view
+				 * */
+				private function startMarkingArea():void {
+					// remove the listeners, as MarkingAreaView controller is taking over from now
+					this.scriptPages.removeEventListener(ScriptPagesEvent.PAGE_LOADED,this.checkReadyForMarking);
+					this.scriptPages.removeEventListener(ScriptPagesEvent.PAGE_LOAD_FAILED,_loadFailed);
+					
+					this.removeAllChildren();
+					// view transition - remove old
+					// set up new - binding the app wide marks and script pages
+					this._markingView = new MarkingAreaView();
+					this._markingView.addEventListener(FlexEvent.CREATION_COMPLETE,getAppBar,false,0,true);
+					this._markingView.init(MarkingAreaView.VIEW_STATE);
+					
+					this._markingView.lastPage = this._lastPage;
+					this._markingView.marks = this.marks;
+					this._markingView.scriptPages = this.scriptPages;							
+					this.addChild(this._markingView);
+					// & start the marking view off, loading the first page
+				}
+				private function getAppBar(fe:FlexEvent):void {
+					this.changeAppBar(fe.target.appBarControls);
+				}
+				/**
+				 * Switch view to entering final mark and submission
+				 * */
+				private function _markAndSubmit(e:MarkingAreaEvent):void {
+					this._markingView.visible = false;
+					this._submissionView = new SubmissionView();
+					this._submissionView.addEventListener(FlexEvent.CREATION_COMPLETE,getAppBar,false,0,true);
+					this._submissionView.marks = this.marks;
+					this._submissionView.addEventListener(SubmissionViewEvent.SUBMIT,_submit,false,0,true);
+					this._submissionView.addEventListener(SubmissionViewEvent.BACK_TO_MARK,backToMarking,false,0,true);
+					this.addChild(this._submissionView);
+					this._submissionView.x = 0;
+				}
+				private function backToMarking(se:SubmissionViewEvent):void {
+					this.removeChild(this._submissionView);
+					this._submissionView = null;
+					this.changeAppBar(this._markingView.appBarControls);
+					this._markingView.visible = true;
+				}
+				private function _submit(e:SubmissionViewEvent):void {
+					this.removeChild(this._markingView);
+					this._markingView = null;
+					this.marks.save();
+					this.marks = new Marks(this._baseURL);
+					this.removeChild(this._submissionView);
+					this._loadJobView();
+				}
+				private function _loadJobView():void {
+					this.jobList.dataProvider = null;
+					this.selectJob.enabled = true;
+					this.scriptPages = new ScriptPages(this._baseURL);
+					this._jobLoader.loadJobs();
+					this.addChild(jobView);
+				}
+				private function changeAppBar(doc:DisplayObjectContainer):void {
+					if(this._appBarControls) this.appBar.removeChild(this._appBarControls);
+					this._appBarControls = doc;
+					this.appBar.addChild(this._appBarControls);
+				}
+				private function showHelp(e:MenuEvent):void {
+					var tw:TitleWindow = new TitleWindow();
+					var text:Text = new Text();
+					text.htmlText = this.helpText[e.index].htmlText;
+					text.width = this.width * .4;
+					
+					tw.title = 'Help: '+this.helpTopics[e.index].title;
+					tw.addChild(text);
+					tw.showCloseButton = true;
+					
+					tw.addEventListener(CloseEvent.CLOSE,this.removeHelpItem,false,0,true);
+					PopUpManager.addPopUp(tw,this,true);
+					PopUpManager.centerPopUp(tw);
+					tw.y -= this.height * .2;
+				}
+				private function removeHelpItem(ce:CloseEvent):void {
+					PopUpManager.removePopUp(TitleWindow(ce.target));
+				}
+			]]>
+		</mx:Script>		
+		<mx:VBox id="jobView" visible="false"  width="100%" >
+			<mx:DataGrid id="jobList" width="80%" >
+			<mx:columns>
+			    <mx:DataGridColumn dataField="question" headerText="Question"/>
+			    <mx:DataGridColumn dataField="subject" headerText="Subject" />
+			</mx:columns>
+			</mx:DataGrid>
+			<mx:Button id="selectJob" label="View detailed feedback" click="_selectJob(event)"/>
+		</mx:VBox>
+</mx:Application>

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email
+END
+activation_request.php
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/activation_request.php
+END
+new_marker.php
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/new_marker.php
+END
+receipt.php
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/receipt.php
+END
+temp_pass.php
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/temp_pass.php
+END
+header_html.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/header_html.php
+END
+simple_html.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/simple_html.php
+END
+marked.php
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/marked.php
+END
+password_reset.php
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/password_reset.php
+END
+marked_html.php
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/exambuffsvn/!svn/ver/2/trunk/trunk/exambuff-app/views/email/marked_html.php
+END

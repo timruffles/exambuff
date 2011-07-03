@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" initialize="_init()" themeColor="0xf4d736" backgroundColor="0xffffff">
+
+<mx:Form horizontalCenter="0" width="600" backgroundColor="0xffffff">
+	<mx:Label text="Classification, targets and comment" fontSize="24"/>
+	<mx:FormItem label="Classification"  toolTip="Enter the overall classifcation for this answer">
+		<mx:ComboBox>
+			<mx:ArrayCollection>
+				<mx:Object label="First-Class" id="first" />
+				<mx:Object label="Upper Second-Class (2:1)" id="two1" />
+				<mx:Object label="Lower Second-Class (2:2)" id="two2" />
+				<mx:Object label="Third-Class" id="third" />
+				<mx:Object label="Fail" id="fail" />
+			</mx:ArrayCollection>
+		</mx:ComboBox>
+	</mx:FormItem>
+	<mx:FormItem label="Targets" toolTip="Enter specific targets for the student to improve.">
+		<mx:DataGrid showHeaders="false" dataProvider="{_targets}" id="targetGrid" width="400" editable="true" itemEditBeginning="this.checkEdit(event)" itemEditEnd="this.editEnd(event)" itemClick="this.removeBtn.enabled = true">
+		</mx:DataGrid>
+		<mx:Button id="removeBtn" click="this._removeTask()" label="Remove target" enabled="false" />
+	</mx:FormItem>
+	
+	<mx:FormItem label="General comment" toolTip="Enter a general comment">
+		<mx:TextArea width="400" height="100" focusInEffect=""/>		
+	</mx:FormItem>
+	<mx:FormItem>
+		<mx:Button label="Finish marking, and release mark"  />
+	</mx:FormItem>
+	
+</mx:Form>
+
+
+<mx:Script>
+	<![CDATA[
+		import mx.collections.ArrayCollection;
+		import mx.events.DataGridEvent;
+		import mx.controls.TextInput;
+		
+		private static const ADD_TARGET:String = "Click to Add Target";
+		[Bindable]
+		private var _targets:ArrayCollection;
+		
+		private function _init():void {
+			this._targets = new ArrayCollection();
+			this._targets.addItem({target:ADD_TARGET});
+		}
+		private function _removeTask():void {
+			if(this.targetGrid.selectedIndex != _targets.length - 1) {
+				var r:int = this.targetGrid.selectedIndex;
+				this._targets.removeItemAt(r);
+				this.removeBtn.enabled = false;			
+			}
+		}
+		private function editEnd(e:DataGridEvent):void{
+		  // Adding a new task
+		  if(e.rowIndex == _targets.length - 1)  {
+		    var txtIn:TextInput =
+		      TextInput(e.currentTarget.itemEditorInstance);
+		    var dt:Object = e.itemRenderer.data;
+		   
+		    // Add new task
+		    if(txtIn.text != ADD_TARGET) {
+		      _targets.addItemAt({target:txtIn.text}, e.rowIndex);
+		    }
+		   
+		    // Destroy item editor
+		    targetGrid.destroyItemEditor();
+		   
+		    // Stop default behavior
+		    e.preventDefault();
+		  }
+		}
+		private function checkEdit(e:DataGridEvent):void	{
+		  // Do not allow editing of Add Task row except for
+		  // "Click to Add" column
+		  if(e.rowIndex != _targets.length - 1) {
+		    e.preventDefault();
+		  }
+		}
+		
+
+
+	]]>
+</mx:Script>
+</mx:Application>
